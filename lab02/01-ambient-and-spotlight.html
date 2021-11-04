@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Lab 02.01 - Ambient and SpotLight</title>
+    <script type="text/javascript" src="three.js"></script>
+    <script type="text/javascript" src="jquery-1.9.0.js"></script>
+    <script type="text/javascript" src="stats.js"></script>
+    <script type="text/javascript" src="dat.gui.js"></script>
+	<script type="text/javascript" src="OrbitControls.js"></script>
+    <style>
+        body {
+            /* set margin to 0 and overflow to hidden, to go fullscreen */
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<div id="Stats-output">
+</div>
+<!-- Div which will hold the Output -->
+<div id="WebGL-output">
+</div>
+
+<!-- Javascript code that runs our Three.js examples -->
+<script type="text/javascript">
+
+
+        let isUp = 0;
+    
+        var stats = initStats();
+
+        var spotLight2
+
+        // create a scene, that will hold all our elements such as objects, cameras and lights.
+        var scene = new THREE.Scene();
+
+        // create a camera, which defines where we're looking at.
+        var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+		
+
+        // create a render and set the size
+        var renderer = new THREE.WebGLRenderer();
+
+        renderer.setClearColor(new THREE.Color(0xEEEEEE));  //background color and opacity
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;   // false is default
+		renderer.autoClear = true;          // default
+		renderer.autoClearColor = true;     // default
+
+		ctr = new THREE.OrbitControls( camera, renderer.domElement);
+
+        // create the ground plane
+        var planeGeometry = new THREE.PlaneGeometry(220, 100, 15, 5);
+        var planeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff, side:THREE.DoubleSide});
+        var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.receiveShadow = true;
+
+        // rotate and position the plane
+        plane.rotation.x = -0.5 * Math.PI;
+        plane.position.x = 15
+        plane.position.y = 0
+        plane.position.z = 0
+
+        // add the plane to the scene
+        scene.add(plane);
+
+        // create a cube
+        var cubeGeometry = new THREE.CubeGeometry(4, 4, 4);
+        var cubeMaterial = new THREE.MeshLambertMaterial({color: 0xff0000, specular: true, shininess: 100});
+        var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+        cube.castShadow = true;
+
+        // position the cube
+        cube.position.x = -4;
+        cube.position.y = 3;
+        cube.position.z = 0;
+
+        // add the cube to the scene
+        scene.add(cube);
+
+        // create a cube2
+        var cubeGeometry2 = new THREE.CubeGeometry(4, 4, 4);
+        var cubeMaterial2 = new THREE.MeshLambertMaterial({color: 0xf000ff});
+        var cube2 = new THREE.Mesh(cubeGeometry2, cubeMaterial2);
+        cube2.castShadow = true;
+
+        // position the cube2
+        cube2.position.x = -20;
+        cube2.position.y = 3;
+        cube2.position.z = 0;
+
+        // add the cube2 to the scene
+        scene.add(cube2);
+
+        var sphereGeometry = new THREE.SphereGeometry(4, 20, 20);
+        var sphereMaterial = new THREE.MeshPhongMaterial({color: 0x7777ff, specular:true, shininess:100});
+        var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+
+        // position the sphere
+        sphere.position.x = 20;
+        sphere.position.y = 0;
+        sphere.position.z = 2;
+        sphere.castShadow = true;
+        sphere.receiveShadow = true;
+
+        // add the sphere to the scene
+        scene.add(sphere);
+
+        // add the sphere to the scene
+        scene.add(sphere);
+
+        var cylinderGeometry = new THREE.CylinderGeometry(0, 5, 10, 10, false);
+        var cylinderMaterial = new THREE.MeshLambertMaterial( { opacity:0.6, color: 0x44ff44,
+            transparent:true } );
+        var cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+
+        cylinder.castShadow = true;
+        cylinder.receiveShadow = true;
+        cylinder.position.set(-35, 5, 0)
+
+        scene.add(cylinder)
+
+        // position and point the camera to the center of the scene
+        camera.position.x = -25;
+        camera.position.y = 30;
+        camera.position.z = 25;
+        camera.lookAt(new THREE.Vector3(10, 0, 0));
+
+        // add subtle ambient lighting
+        var ambiColor = "#0c0c0c";
+        var ambientLight = new THREE.AmbientLight(ambiColor);
+        scene.add(ambientLight);
+
+        // add spotlight for the shadows
+        var spotLight = new THREE.SpotLight(0xffffff);
+        spotLight.position.set(-40, 60, -10);
+        spotLight.castShadow = true;
+		  
+		spotLight.angle = 0.7;
+		spotLight.penumbra = .8;
+		spotLight.target = sphere;
+		var helper = new THREE.CameraHelper( spotLight.shadow.camera );
+        scene.add( helper );
+		spotLight.shadow.camera.near = 0.9;
+		spotLight.shadow.camera.far = 100;
+		spotLight.shadow.camera.fov = 60;
+		spotLight.shadow.mapSize.width = 2048;
+		spotLight.shadow.mapSize.height = 2048;
+
+        scene.add(spotLight);
+
+
+        spotLight2 = new THREE.SpotLight(0x00FF00);
+        spotLight2.position.set(-20, 30, 0);
+        spotLight2.castShadow = true;
+
+        spotLight2.angle = 0.5;
+        spotLight2.target = cylinder;
+        spotLight2.shadow.camera.near = 0.5;
+        spotLight2.shadow.far = 100;
+        spotLight2.shadow.camera.fov = 50;
+        spotLight2.shadow.mapSize.width=2048;
+        spotLight2.shadow.mapSize.height=2048;
+
+        scene.add(spotLight2)
+
+        // add the output of the renderer to the html element
+        $("#WebGL-output").append(renderer.domElement);
+
+        // call the render function
+        var step = 0;
+
+        var controls = new function () {
+            this.rotationSpeed = 0.02;
+            this.bouncingSpeed = 0.03;
+            this.ambientColor = ambiColor;
+        }
+
+        var gui = new dat.GUI();
+        gui.addColor(controls, 'ambientColor').onChange(function (e) {
+            ambientLight.color = new THREE.Color(e);
+        });
+
+
+        render();
+
+        function render() {
+            stats.update();
+            // rotate the cube2 around its axes
+            cube2.rotation.x += controls.rotationSpeed;
+            cube2.rotation.y += controls.rotationSpeed;
+            cube2.rotation.z += controls.rotationSpeed;
+
+            // bounce the sphere up and down
+            step += controls.bouncingSpeed;
+            sphere.position.x = 20 + ( 10 * (Math.cos(step)));
+            sphere.position.y = 2 + ( 10 * Math.abs(Math.sin(step)));
+
+            if((cube.position.y < 20)&&(isUp === 0)) {
+                cube.position.y += 0.5;
+            }
+
+            else {
+                isUp = 1;
+            }
+
+            if((isUp === 1)&&(cube.position.y > 5)) {
+                cube.position.y -= 0.2;
+                cube.rotation.y += 0.1;
+            }
+
+            else {
+                if (isUp === 1) {
+                    isUp = 0;
+                }
+            }
+
+           spotLight2.angle -= 0.01;
+
+
+
+            // render using requestAnimationFrame
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+        }
+
+        function initStats() {
+
+            var stats = new Stats();
+
+            stats.setMode(0); // 0: fps, 1: ms
+
+            // Align top-left
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+
+            $("#Stats-output").append(stats.domElement);
+
+            return stats;
+        }
+  
+
+
+</script>
+</body>
+</html>

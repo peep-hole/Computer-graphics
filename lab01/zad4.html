@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Three.js tutorial - Example 04</title>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <style type="text/css">
+        body {
+            background-color: #000000;
+
+            overflow: hidden;
+        }
+    </style>
+
+    <script src="three.js"></script>
+    <script src="Detector.js"></script>
+</head>
+<body>
+<div id="WebGLCanvas"> </div>
+
+<script>
+    var scene;
+
+    var camera;
+
+    var treeMesh1;
+    var treeMesh2;
+    var treeMesh3;
+    var treeMeshWood;
+
+    var carMesh;
+    var wheelMesh1;
+    var wheelMesh2;
+
+    var directionFactor = 0.1;
+
+
+    initializeScene();
+
+    animateScene();
+
+    /**
+     * Initialze the scene.
+     */
+    function initializeScene(){
+
+        if(Detector.webgl){
+            renderer = new THREE.WebGLRenderer({antialias:true});
+
+        } else {
+            renderer = new THREE.CanvasRenderer();
+        }
+
+        renderer.setClearColor(0x000000, 1);
+
+        canvasWidth = window.innerWidth;
+        canvasHeight = window.innerHeight;
+
+        renderer.setSize(canvasWidth, canvasHeight);
+
+        document.getElementById("WebGLCanvas").appendChild(renderer.domElement);
+
+        scene = new THREE.Scene();
+
+
+        camera = new THREE.PerspectiveCamera(45, canvasWidth / canvasHeight, 1, 100);
+        camera.position.set(0, 0, 20);
+        camera.lookAt(scene.position);
+        scene.add(camera);
+
+
+        var treeGeometry1 = new THREE.CylinderGeometry(0, 1.5, 1.2, 10, false);
+
+        for(i = 0; i < treeGeometry1.faces.length; i++){
+            if(treeGeometry1.faces[i] instanceof THREE.Face4){
+                treeGeometry1.faces[i].vertexColors[0] = new THREE.Color(0xFF0000);
+                if((i % 2) == 0){
+                    treeGeometry1.faces[i].vertexColors[1] = new THREE.Color(0x00FF00);
+                    treeGeometry1.faces[i].vertexColors[2] = new THREE.Color(0x0000FF);
+                } else {
+                    treeGeometry1.faces[i].vertexColors[1] = new THREE.Color(0x0000FF);
+                    treeGeometry1.faces[i].vertexColors[2] = new THREE.Color(0x00FF00);
+                }
+                treeGeometry1.faces[i].vertexColors[3] = new THREE.Color(0xFF0000);
+            } else {
+                treeGeometry1.faces[i].vertexColors[0] = new THREE.Color(0x00FF00);
+                treeGeometry1.faces[i].vertexColors[1] = new THREE.Color(0x006400);
+                treeGeometry1.faces[i].vertexColors[2] = new THREE.Color(0x006400);
+            }
+        }
+
+        var treeMaterial1 = new THREE.MeshBasicMaterial({
+            vertexColors:THREE.VertexColors,
+            side:THREE.DoubleSide
+        });
+
+        treeMesh1 = new THREE.Mesh(treeGeometry1, treeMaterial1);
+        treeMesh1.position.set(-1.5, 2, 2);
+        scene.add(treeMesh1);
+
+        var treeGeometry2 = new THREE.CylinderGeometry(0.7, 1.5, 1.2, 10, false);
+
+        for(i = 0; i < treeGeometry2.faces.length; i++){
+            if(treeGeometry2.faces[i] instanceof THREE.Face4){
+                treeGeometry2.faces[i].vertexColors[0] = new THREE.Color(0xFF0000);
+                if((i % 2) == 0){
+                    treeGeometry2.faces[i].vertexColors[1] = new THREE.Color(0x00FF00);
+                    treeGeometry2.faces[i].vertexColors[2] = new THREE.Color(0x0000FF);
+                } else {
+                    treeGeometry2.faces[i].vertexColors[1] = new THREE.Color(0x0000FF);
+                    treeGeometry2.faces[i].vertexColors[2] = new THREE.Color(0x00FF00);
+                }
+                treeGeometry2.faces[i].vertexColors[3] = new THREE.Color(0xFF0000);
+            } else {
+                treeGeometry2.faces[i].vertexColors[0] = new THREE.Color(0x00FF00);
+                treeGeometry2.faces[i].vertexColors[1] = new THREE.Color(0x006400);
+                treeGeometry2.faces[i].vertexColors[2] = new THREE.Color(0x006400);
+            }
+        }
+
+        var treeMaterial2 = new THREE.MeshBasicMaterial({
+            vertexColors:THREE.VertexColors,
+            side:THREE.DoubleSide
+        });
+
+        treeMesh2 = new THREE.Mesh(treeGeometry2, treeMaterial2);
+        treeMesh2.position.set(-1.5, 1, 2);
+        scene.add(treeMesh2);
+
+
+        var treeGeometry3 = new THREE.CylinderGeometry(0.7, 1.5, 1.2, 10, false);
+
+        for(i = 0; i < treeGeometry3.faces.length; i++){
+            if(treeGeometry3.faces[i] instanceof THREE.Face4){
+                treeGeometry3.faces[i].vertexColors[0] = new THREE.Color(0xFF0000);
+                if((i % 2) == 0){
+                    treeGeometry3.faces[i].vertexColors[1] = new THREE.Color(0x00FF00);
+                    treeGeometry3.faces[i].vertexColors[2] = new THREE.Color(0x0000FF);
+                } else {
+                    treeGeometry3.faces[i].vertexColors[1] = new THREE.Color(0x0000FF);
+                    treeGeometry3.faces[i].vertexColors[2] = new THREE.Color(0x00FF00);
+                }
+                treeGeometry3.faces[i].vertexColors[3] = new THREE.Color(0xFF0000);
+            } else {
+                treeGeometry3.faces[i].vertexColors[0] = new THREE.Color(0x00FF00);
+                treeGeometry3.faces[i].vertexColors[1] = new THREE.Color(0x006400);
+                treeGeometry3.faces[i].vertexColors[2] = new THREE.Color(0x006400);
+            }
+        }
+
+        var treeMaterial3 = new THREE.MeshBasicMaterial({
+            vertexColors:THREE.VertexColors,
+            side:THREE.DoubleSide
+        });
+
+        treeMesh3 = new THREE.Mesh(treeGeometry3, treeMaterial3);
+        treeMesh3.position.set(-1.5, 0, 2);
+        scene.add(treeMesh3);
+
+
+        var woodGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.9, 100, false);
+
+        for(i = 0; i < woodGeometry.faces.length; i++){
+            if(woodGeometry.faces[i] instanceof THREE.Face4){
+                woodGeometry.faces[i].vertexColors[0] = new THREE.Color(0x964B00);
+                if((i % 2) == 0){
+                    woodGeometry.faces[i].vertexColors[1] = new THREE.Color(0x964B00);
+                    woodGeometry.faces[i].vertexColors[2] = new THREE.Color(0x964B00);
+                } else {
+                    woodGeometry.faces[i].vertexColors[1] = new THREE.Color(0x964B00);
+                    woodGeometry.faces[i].vertexColors[2] = new THREE.Color(0x964B00);
+                }
+                woodGeometry.faces[i].vertexColors[3] = new THREE.Color(0x964B00);
+            } else {
+                woodGeometry.faces[i].vertexColors[0] = new THREE.Color(0x964B00);
+                woodGeometry.faces[i].vertexColors[1] = new THREE.Color(0x964B00);
+                woodGeometry.faces[i].vertexColors[2] = new THREE.Color(0xFFFFFF);
+            }
+        }
+
+        var woodMaterial = new THREE.MeshBasicMaterial({
+            vertexColors:THREE.VertexColors,
+            side:THREE.DoubleSide
+        });
+
+        treeMeshWood = new THREE.Mesh(woodGeometry, woodMaterial);
+        treeMeshWood.position.set(-1.5, -1, 2);
+        scene.add(treeMeshWood);
+
+        var cubeGeometry = new THREE.CubeGeometry(2.5, 2.0, 2.5);
+
+        var cubeMaterials = [
+            new THREE.MeshBasicMaterial({color:0x808080}),
+            new THREE.MeshBasicMaterial({color:0x808080}),
+            new THREE.MeshBasicMaterial({color:0x808080}),
+            new THREE.MeshBasicMaterial({color:0x808080}),
+            new THREE.MeshBasicMaterial({color:0xFFFFFF}),
+            new THREE.MeshBasicMaterial({color:0x808080})
+        ];
+
+        var cubeMaterial = new THREE.MeshFaceMaterial(cubeMaterials);
+
+        cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
+        cubeMesh.position.set(4.5, -1, 1);
+        scene.add(cubeMesh);
+
+        var pyramidGeometry = new THREE.CylinderGeometry(0, 2, 1, 4, false);
+
+        for(i = 0; i < pyramidGeometry.faces.length; i++){
+            if(pyramidGeometry.faces[i] instanceof THREE.Face4){
+                pyramidGeometry.faces[i].vertexColors[0] = new THREE.Color(0x000000);
+                if((i % 2) == 0){
+                    pyramidGeometry.faces[i].vertexColors[1] = new THREE.Color(0x00FF00);
+                    pyramidGeometry.faces[i].vertexColors[2] = new THREE.Color(0x0000FF);
+                } else {
+                    pyramidGeometry.faces[i].vertexColors[1] = new THREE.Color(0x0000FF);
+                    pyramidGeometry.faces[i].vertexColors[2] = new THREE.Color(0x00FF00);
+                }
+                pyramidGeometry.faces[i].vertexColors[3] = new THREE.Color(0xFF0000);
+            } else {
+                pyramidGeometry.faces[i].vertexColors[0] = new THREE.Color(0xFFFFFF);
+                pyramidGeometry.faces[i].vertexColors[1] = new THREE.Color(0x964B00);
+                pyramidGeometry.faces[i].vertexColors[2] = new THREE.Color(0x964B00);
+            }
+        }
+
+        var pyramidMaterial = new THREE.MeshBasicMaterial({
+            vertexColors:THREE.VertexColors,
+            side:THREE.DoubleSide
+        });
+
+        pyramidMesh = new THREE.Mesh(pyramidGeometry, pyramidMaterial);
+        pyramidMesh.position.set(4.5, 0.5, 1);
+        pyramidMesh.rotation.y -= 0.7;
+        scene.add(pyramidMesh);
+
+
+        var windowGeometry = new THREE.Geometry();
+        windowGeometry.vertices.push(new THREE.Vector3(-0.3,  0.3, 0.3));
+        windowGeometry.vertices.push(new THREE.Vector3( 0.3,  0.3, 0.3));
+        windowGeometry.vertices.push(new THREE.Vector3( 0.3, -0.3, 0.3));
+        windowGeometry.vertices.push(new THREE.Vector3(-0.3, -0.3, 0.3));
+        windowGeometry.faces.push(new THREE.Face3(0, 1, 2));
+        windowGeometry.faces.push(new THREE.Face3(0, 2, 3));
+
+        var windowMaterial = new THREE.MeshBasicMaterial({
+            color:0xADD8E6,
+            side:THREE.DoubleSide
+        });
+
+        var windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
+        windowMesh.position.set(3.5, -0.6, 3.5);
+        scene.add(windowMesh);
+
+        var doorGeometry = new THREE.Geometry();
+        doorGeometry.vertices.push(new THREE.Vector3(-0.3,  0.5, 0.3));
+        doorGeometry.vertices.push(new THREE.Vector3( 0.3,  0.5, 0.3));
+        doorGeometry.vertices.push(new THREE.Vector3( 0.3, -0.5, 0.3));
+        doorGeometry.vertices.push(new THREE.Vector3(-0.3, -0.5, 0.3));
+        doorGeometry.faces.push(new THREE.Face3(0, 1, 2));
+        doorGeometry.faces.push(new THREE.Face3(0, 2, 3));
+
+        var doorMaterial = new THREE.MeshBasicMaterial({
+            color:0x964B00,
+            side:THREE.DoubleSide
+        });
+
+        var doorMesh = new THREE.Mesh(doorGeometry, doorMaterial);
+        doorMesh.position.set(4.7, -1.2, 3.5);
+        scene.add(doorMesh);
+
+
+        var carGeometry = new THREE.Geometry();
+        carGeometry.vertices.push(new THREE.Vector3(-1.5,  0.7, 0.3));
+        carGeometry.vertices.push(new THREE.Vector3( 1.5,  0.7, 0.3));
+        carGeometry.vertices.push(new THREE.Vector3( 1.5, -0.7, 0.3));
+        carGeometry.vertices.push(new THREE.Vector3(-1.5, -0.7, 0.3));
+        carGeometry.faces.push(new THREE.Face3(0, 1, 2));
+        carGeometry.faces.push(new THREE.Face3(0, 2, 3));
+
+        var carMaterial = new THREE.MeshBasicMaterial({
+            color:0xFF0000 ,
+            side:THREE.DoubleSide
+        });
+
+        carMesh = new THREE.Mesh(carGeometry, carMaterial);
+        carMesh.position.set(4.7, -4.2, 3.5);
+        scene.add(carMesh);
+
+
+        var wheelGeometry = new THREE.CircleGeometry( 0.6, 32 );
+        var wheelMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
+
+        wheelMesh1 = new THREE.Mesh( wheelGeometry, wheelMaterial );
+        wheelMesh1.position.set(3.9, -5.0, 3.9)
+        scene.add( wheelMesh1 );
+
+        wheelMesh2 = new THREE.Mesh( wheelGeometry, wheelMaterial );
+        wheelMesh2.position.set(5.6, -5.0, 3.9)
+        scene.add( wheelMesh2 );
+
+    }
+
+    /**
+     * Animate the scene and call rendering.
+     */
+    function animateScene(){
+
+        treeMesh1.rotation.y += 0.03;
+        treeMesh2.rotation.y += 0.03;
+        treeMesh3.rotation.y += 0.03;
+        treeMeshWood.rotation.y += 0.03;
+
+        carMesh.position.x -= directionFactor;
+        wheelMesh1.position.x -= directionFactor;
+        wheelMesh2.position.x -= directionFactor;
+
+        if (carMesh.position.x < -10) {
+            directionFactor = -0.1;
+        }
+
+        if (carMesh.position.x > 10) {
+            directionFactor = 0.1;
+        }
+
+
+
+        requestAnimationFrame(animateScene);
+
+
+        renderScene();
+    }
+
+    /**
+     * Render the scene. Map the 3D world to the 2D screen.
+     */
+    function renderScene(){
+        renderer.render(scene, camera);
+    }
+</script>
+</body>
+</html>
